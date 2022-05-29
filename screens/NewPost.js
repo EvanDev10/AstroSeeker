@@ -73,8 +73,11 @@ const NewPost = ({ navigation }) => {
                 Fecha: FechaFinal
             });
 
-            if (docRef.id != "")
+            if (docRef.id != ""){
                 alert("Registro exitoso");
+                setShowModal(!showModal);
+                navigation.navigate("Comm", { Cambio: "SI" })
+            }
             else
                 alert("Hubo un error al registrar");
         }
@@ -85,7 +88,7 @@ const NewPost = ({ navigation }) => {
     }
 
     const [Topico, setTopico] = useState({
-        Autor: "Javys", //Reemplazar por logeado
+        Autor: Usr, //Reemplazar por logeado
         Tema: "",
         Descripcion: "",
         Fecha: FechaDeHoy

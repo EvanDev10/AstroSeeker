@@ -74,20 +74,22 @@ const ShowPost = ({ route, navigation }) => {
                 Fecha: FechaFinal
             });
 
-            if (docRef.id != ""){
+            if (docRef.id != "") {
                 alert("Registro exitoso");
                 setShowModalProceder(!showModalProceder)
-                setShowModal(!showModal)
+                //setShowModal(!showModal)
+                BuscarInfo();
+                Lista();
             }
             else
                 alert("Hubo un error al registrar");
         }
         else {
             alert("No te has expresado :c")
+            setShowModalProceder(!showModalProceder)
         }
 
     }
-
 
     useEffect(() => {
         BuscarInfo();
@@ -140,20 +142,6 @@ const ShowPost = ({ route, navigation }) => {
         return Fila;
     }
 
-
-    const PublicarComentario = () => {
-        return (
-
-            <Stack direction="row" space={2}>
-
-                <Input value={Comentario} onChange={handleChange} variant="rounded" mx="3" placeholder="Comparte tus ideas c:" />
-
-                <Button onPress={ () => changeShowModalProceder(!showModalProceder)}>Enviar</Button>
-
-            </Stack>
-
-        );
-    }
     //Elementos para modal de continar
 
     const ComponenteComentarios = ({ item }) => {
@@ -164,49 +152,25 @@ const ShowPost = ({ route, navigation }) => {
 
                     <Stack style={{ alignItems: 'center', }} direction="column" space={2}>
                         <Image alt="Foto" style={{ borderColor: 'black', borderWidth: 2, borderRadius: 60, width: 60, height: 60 }}></Image>
-                        <Input value = {item.Comentario} variant="rounded" mx="3" disabled/></Stack>
+                        <Input value={item.Comentario} variant="rounded" mx="3" disabled /></Stack>
 
                 </Stack>
             </Stack>
         );
     }
 
-    const ComentariosComp = () => {
-
-        return (
-
-            <Modal
-                animationType="slide"
-                transparent={false}
-                visible={showModal}
-                onRequestClose={() => {
-                    alert("Hasta la proxima c:");
-                    setShowModal(!showModal);
-                }}>
-                <View style={Estilo.ViewComent}>
-
-                    <View style={Estilo.EstiloModal}>
-                        <FlatList
-                            data={Comentarios}
-                            renderItem={ComponenteComentarios}
-                        />
-                    </View>
-                    <Divider />
-                    <PublicarComentario />
-                    <Divider />
-                    <View>
-                        <Button style={Estilo.BotonCerrarModal} onPress={() => {
-                            setShowModal(!showModal);
-                            console.log("Cerrar");
-                        }}>Cerrar</Button>
-                    </View>
-                </View>
-            </Modal>
-        );
-
+    const Lista = () => {
+        return(
+        <FlatList
+            data={Comentarios}
+            renderItem={ComponenteComentarios}
+        />);
     }
 
-
+    const CambioHecho = () => {
+        BuscarInfo();
+        Lista();
+    }
 
     const [showModal, setShowModal] = useState(false)
 
@@ -220,10 +184,52 @@ const ShowPost = ({ route, navigation }) => {
                     <Divider style={Estilo.Divider} />
                     <Text style={Estilo.Titulo}>Creado por {Autor}</Text>
                     <Image alt="Foto" style={{ borderColor: 'black', borderWidth: 2, borderRadius: 60, width: 60, height: 60 }}></Image>
+
+                </Box>
+                <Box>
+                    <Button onPress={() => {
+                        navigation.navigate("Comm")
+                    }}>
+                        Regresar
+                    </Button>
+
                 </Box>
                 <BotonFlotante />
             </Box>
-            <ComentariosComp />
+
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={showModal}
+                onRequestClose={() => {
+                    alert("Hasta la proxima c:");
+                    setShowModal(!showModal);
+                }}>
+                <View style={Estilo.ViewComent}>
+
+                    <View style={Estilo.EstiloModal}>
+                        <Lista />
+                    </View>
+                    <Divider />
+
+                    <Stack direction="row" space={2}>
+
+                        <Input value={Comentario} onChange={(e) => handleChange(e)} variant="rounded" mx="3" placeholder="Comparte tus ideas c:" />
+
+                        <Button onPress={() => changeShowModalProceder(!showModalProceder)}>Enviar</Button>
+
+                    </Stack>
+
+                    <Divider />
+                    <View>
+                        <Button style={Estilo.BotonCerrarModal} onPress={() => {
+                            setShowModal(!showModal);
+                            console.log("Cerrar");
+                        }}>Cerrar</Button>
+                    </View>
+                </View>
+            </Modal>
+
             <ProcederModal />
         </NativeBaseProvider>
 
@@ -242,6 +248,17 @@ const Estilo = StyleSheet.create({
         borderWidth: 2,
         width: '100%',
         height: '100%',
+    },
+    ModalProc: {
+        width: 300,
+        height: 300,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: "center",
+        padding: 22,
+        margin: 5,
+        borderWidth: 1,
+        borderRadius: 50
     },
     ViewComent: {
         alignItems: 'center',
@@ -285,7 +302,7 @@ const Estilo = StyleSheet.create({
         height: 65,
         alignItems: 'center',
         justifyContent: 'center',
-        left: 70,
+        left: 160,
         bottom: 10,
     },
     BotonCerrarModal: {
@@ -320,9 +337,13 @@ const Estilo = StyleSheet.create({
     },
     TextComentario: {
         alignItems: 'center',
+        padding: 2,
+        margin: 2
     },
     InputCommentario: {
         alignItems: 'center',
+        padding: 2,
+        margin: 2
     },
 });
 

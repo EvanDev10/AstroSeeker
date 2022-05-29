@@ -5,7 +5,7 @@ import { Stack, Divider, Input, Switch, Button, NativeBaseProvider, Box } from "
 import fb from '../Firebase/Conexion';
 import { doc, getDocs, startAt, where,orderBy, collection, limit, query } from 'firebase/firestore';
 
-const Community = ({ navigation }) => {
+const Community = ({ route, navigation }) => {
 
     const FechaDeHoy = () => {
 
@@ -19,11 +19,15 @@ const Community = ({ navigation }) => {
 
     }
 
+
     useEffect(() => {
         BuscarInfo();
-        console.log("Hecho")
-        console.log("Temas:\n", Temas)
     }, [Bus]);
+
+    useEffect(() => {
+        BuscarInfo();
+        Lista
+    }, [route.params]);
 
     //Listado de 10 post 
     const [Temas, setTemas] = useState({
@@ -51,7 +55,7 @@ const Community = ({ navigation }) => {
         const Fila = [];
 
         if (Bus != "") {
-            const Busqueda = query(dbRef, orderBy("Tema"), startAt(Bus));
+            const Busqueda = query(dbRef,orderBy("Tema"), startAt(Bus));
 
             const querySnapshot = await getDocs(Busqueda);
 
@@ -70,7 +74,7 @@ const Community = ({ navigation }) => {
             console.log("Temas", Temas);
         }
         else {
-            const Busqueda = query(dbRef, limit(10));
+            const Busqueda = query(dbRef, orderBy("Fecha", "desc"), limit(10));
             const querySnapshot = await getDocs(Busqueda);
 
             querySnapshot.forEach((doc) => {
@@ -110,10 +114,10 @@ const Community = ({ navigation }) => {
                 >
                     <View style={{ alignItems: 'center', padding: 22, margin: 5 }}>
                         <Text style={{ alignItems: 'center', padding: 22, margin: 5 }}>Bienvenido</Text>
-                        <Text style={{ alignItems: 'center', padding: 22, margin: 5 }}>AQUI SE MUESTRAN LAS DIFERENTES INSTRUCCIONES PARA MANEJAR LA APLICACION")</Text>
+                        <Text style={{ alignItems: 'center', padding: 22, margin: 5 }}>AQUI SE MUESTRAN LAS DIFERENTES INSTRUCCIONES PARA MANEJAR LA APLICACION</Text>
                         <Stack space={3} direction='row'>
                             <Button style={{ width: 100 }}>{"<-"}</Button>
-                            <Button style={{ width: 100 }} onPress={() => setShowModal(!showModal)}> X</Button>
+                            <Button style={{ width: 100 }} onPress={() => setShowModal(!showModal)}>X</Button>
                             <Button style={{ width: 100 }}>{"->"}</Button>
                         </Stack>
                     </View>
@@ -133,6 +137,23 @@ const Community = ({ navigation }) => {
                         <Image
                             source={require("./../assets/Agregar.png")}
                             style={Estilo.BotonFlotante} />
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    const ManagePostButton = () => {
+        return (
+            <SafeAreaView>
+                <View>
+                    <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => { navigation.navigate("ManagePost") }}
+                        style={Estilo.TouchableFlotante3}>
+                        <Image
+                            source={require("./../assets/Lista.png")}
+                            style={Estilo.BotonFlotante3} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -168,7 +189,7 @@ const Community = ({ navigation }) => {
                         <Text style={Estilo.Titulo}>{item.Tema}</Text>
                     </Pressable>
                     <Stack direction="row" space={2} style={Estilo.Caratula2}>
-                        <Stack  style = {{width: 800}}direction="row" space={2} style={Estilo.Caratula3}>
+                        <Stack  style = {{width: 800}} direction="row" space={2} style={Estilo.Caratula3}>
                             <Image alt="Foto" style={{ borderColor: 'black', borderWidth: 2, borderRadius: 40, width: 45, height: 45 }}></Image>
                             <Text style={Estilo.Texto}>{item.Autor}</Text>
                         </Stack>
@@ -176,6 +197,12 @@ const Community = ({ navigation }) => {
                 </Stack>
             </View>
 
+        );
+    }
+
+    const Lista = () => {
+        return (
+            <FlatList data={Temas} renderItem={Topicos} />
         );
     }
 
@@ -187,11 +214,12 @@ const Community = ({ navigation }) => {
                     </Button>} placeholder="Tipea tu busqueda..." />
                 <Divider />
 
-                <FlatList data={Temas} renderItem={Topicos} />
+                <Lista/>
 
                 <HowTo />
             </Box>
             <NewPostButton />
+            <ManagePostButton />
             <HowToButton />
         </NativeBaseProvider>
 
@@ -315,6 +343,24 @@ const Estilo = StyleSheet.create({
         width: 65,
         height: 65,
         //backgroundColor:'black'
+    },
+    TouchableFlotante3: {
+        position: 'absolute',
+        width: 80,
+        height: 80,
+        alignItems: 'center',
+        justifyContent: 'center',
+        left: "45%",
+        bottom: "45%",
+    },
+    BotonFlotante3: {
+        resizeMode: 'contain',
+        width: 65,
+        height: 65,
+        backgroundColor:'white',
+        borderColor: 'white',
+        borderRadius: 50,
+        borderWidth: 2
     }
 
 });
