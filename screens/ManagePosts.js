@@ -7,7 +7,7 @@ import fb from '../Firebase/Conexion'
 
 const ManagePost = ({ route, navigation }) => {
 
-    const [Usr, setUsr] = useState("Javys")
+    const [Usr, setUsr] = useState("Carlos")
 
     const FechaDeHoy = () => {
 
@@ -21,7 +21,7 @@ const ManagePost = ({ route, navigation }) => {
 
     }
 
-
+    const [Cambio, setCambio] = useState(false);
     useEffect(() => {
         BuscarInfo();
     }, [Bus]);
@@ -30,6 +30,11 @@ const ManagePost = ({ route, navigation }) => {
         BuscarInfo();
         Lista
     }, [route.params]);
+
+    useEffect(() => {
+        BuscarInfo();
+        Lista
+    }, [Cambio]);
 
     //Listado de 10 post 
     const [Temas, setTemas] = useState({
@@ -127,13 +132,17 @@ const ManagePost = ({ route, navigation }) => {
             </View>
         );
     }
-    //Metodo para actualizar
+    //Metodo para borrar
     const Erease = async (key, topic) => {
         console.log(key, "- ", topic)
         //Borra El Post
-        await deleteDoc(doc(fb.db, "Topicos", key));
+        const e = await deleteDoc(doc(fb.db, "Topicos", key));
         //Sus comentarios
-        await deleteDoc(doc(fb.db, "Comentarios", topic));
+        const a = await deleteDoc(doc(fb.db, "Comentarios", topic));
+
+        alert("Borrado completo");
+
+        setCambio(!Cambio);
     }
     //Metodo para actualizar
     const Update = async (key, cont) => {
@@ -141,6 +150,10 @@ const ManagePost = ({ route, navigation }) => {
         await updateDoc(RegistroSeleccionado, {
             Comentario: cont
           });
+
+        alert("Actualizacion hecha");
+
+        setCambio(!Cambio);
     }
 
     //Componente del foro
@@ -158,9 +171,10 @@ const ManagePost = ({ route, navigation }) => {
                             <Text style={Estilo.Texto}>{item.Autor}</Text>
                             <Button onPress={() => {
                                 setshowModalUpd(!showModalUpd);
+                                Update(item.Id, Comentario);
                             }}>Cambiar</Button>
                             <Button onPress={() => {
-                                ProcederContinuar(item.Id, item.Tema, "d")
+                                Erease(item.Id, item.Tema)
                             }}>Borrar</Button>
                         </Stack>
                     </Stack>
@@ -171,19 +185,6 @@ const ManagePost = ({ route, navigation }) => {
     }
 
     const [Adelante, setAdelante] = useState(false)
-
-    const ProcederContinuar = (Id, Cont, Op) =>{
-
-        setShowModal2(!showModal2);
-
-        console.log("Ade: ", Adelante);
-
-
-        
-
-        
-
-    }    
 
     const Lista = () => {
         return (
@@ -198,6 +199,12 @@ const ManagePost = ({ route, navigation }) => {
         setAdelante(e);
         console.log(Adelante)
     }
+
+    const [updateVal, setUpdateVal] = useState({
+        id: "",
+        val: ""
+    })
+ 
     const ProcederModal = (Id, Top) => {
 
         return (
@@ -258,14 +265,11 @@ const ManagePost = ({ route, navigation }) => {
                     }}>
                     <View style={Estilo.ViewComent}>
 
-                        <View style={Estilo.EstiloModal}>
-                            <Lista />
-                        </View>
                         <Divider />
 
                         <Stack direction="row" space={2}>
 
-                            <Input value={Comentario} onChange={(e) => setComentario(e)} variant="rounded" mx="3" placeholder="Comparte tus ideas c:" />
+                            <Input value={Comentario} onChange={(e) => setComentario(e.target.value)} variant="rounded" mx="3" placeholder="Comparte tus ideas c:" />
 
                             <Button onPress={() => setshowModalUpd(!showModalUpd)}>Actualizar</Button>
 
@@ -327,10 +331,10 @@ const Estilo = StyleSheet.create({
         borderRadius: 8,
         margin: 2,
         height: 50,
-        width: '70%',
+        width: '80%',
     },
     Caratula: {
-        width: '99%',
+        width: '100%',
         alignItems: 'center',
         alignContent: 'center',
         height: '40%',
@@ -339,7 +343,7 @@ const Estilo = StyleSheet.create({
         margin: 2
     },
     Caratula2: {
-        width: '70%',
+        width: '80%',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -349,14 +353,14 @@ const Estilo = StyleSheet.create({
         margin: 15
     },
     Caratula3: {
-        width: '70%',
+        width: '90%',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
         height: '40%',
         borderRadius: 8,
         padding: 0,
-        margin: 15
+        margin: 10
     },
     Lista: {
         width: '100%'
