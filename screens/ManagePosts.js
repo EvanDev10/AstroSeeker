@@ -7,6 +7,38 @@ import fb from '../Firebase/Conexion'
 
 const ManagePost = ({ route, navigation }) => {
 
+    useEffect(() => {
+        BuscarInfo();
+    }, [Bus]);
+
+    useEffect(() => {
+        BuscarInfo();
+        Lista
+    }, [route.params]);
+
+    useEffect(() => {
+        BuscarInfo();
+        Lista
+    }, [Cambio]);
+
+    useEffect(() => {
+        BuscarInfo();
+        Lista
+    }, [Cambio]);
+
+    useEffect(() => {
+        setshowModalUpd(!showModalUpd)
+    }, [updateVal]);
+
+    //Listado de 10 post 
+    const [Temas, setTemas] = useState({
+        Id: "",
+        Autor: "",
+        Tema: "",
+        Descripcion: "",
+        Fecha: ""
+    })
+
     const [Usr, setUsr] = useState("Carlos")
 
     const FechaDeHoy = () => {
@@ -22,28 +54,6 @@ const ManagePost = ({ route, navigation }) => {
     }
 
     const [Cambio, setCambio] = useState(false);
-    useEffect(() => {
-        BuscarInfo();
-    }, [Bus]);
-
-    useEffect(() => {
-        BuscarInfo();
-        Lista
-    }, [route.params]);
-
-    useEffect(() => {
-        BuscarInfo();
-        Lista
-    }, [Cambio]);
-
-    //Listado de 10 post 
-    const [Temas, setTemas] = useState({
-        Id: "",
-        Autor: "",
-        Tema: "",
-        Descripcion: "",
-        Fecha: ""
-    })
 
     const [Bus, setBus] = useState("")
 
@@ -145,15 +155,23 @@ const ManagePost = ({ route, navigation }) => {
         setCambio(!Cambio);
     }
     //Metodo para actualizar
-    const Update = async (key, cont) => {
+    const Update = async (key) => {
+        console.log("k: ",key)
         const RegistroSeleccionado = doc(fb.db, "Topicos", key);
         await updateDoc(RegistroSeleccionado, {
-            Comentario: cont
+            Descripcion: Comentario
           });
 
         alert("Actualizacion hecha");
 
-        setCambio(!Cambio);
+        navigation.navigate("Comm", {id: key})
+    }
+
+    const handleChangeUpdVal = (e) => {
+        console.log(e);
+        setUpdateVal(e);
+        console.log(showModalUpd);
+        setshowModalUpd(!showModalUpd)
     }
 
     //Componente del foro
@@ -169,13 +187,10 @@ const ManagePost = ({ route, navigation }) => {
                         <Stack style={{ width: 800 }} direction="row" space={2} style={Estilo.Caratula3}>
                             <Image alt="Foto" style={{ borderColor: 'black', borderWidth: 2, borderRadius: 40, width: 45, height: 45 }}></Image>
                             <Text style={Estilo.Texto}>{item.Autor}</Text>
-                            <Button onPress={() => {
-                                setshowModalUpd(!showModalUpd);
-                                Update(item.Id, Comentario);
-                            }}>Cambiar</Button>
-                            <Button onPress={() => {
-                                Erease(item.Id, item.Tema)
-                            }}>Borrar</Button>
+                            
+                            <Button onPress={ (e)=>handleChangeUpdVal(item.Id)}>Cambiar</Button>
+                            <Button onPress={() => { Erease(item.Id, item.Tema) }}>Borrar</Button>
+
                         </Stack>
                     </Stack>
                 </Stack>
@@ -200,10 +215,7 @@ const ManagePost = ({ route, navigation }) => {
         console.log(Adelante)
     }
 
-    const [updateVal, setUpdateVal] = useState({
-        id: "",
-        val: ""
-    })
+    const [updateVal, setUpdateVal] = useState("")
  
     const ProcederModal = (Id, Top) => {
 
@@ -239,7 +251,7 @@ const ManagePost = ({ route, navigation }) => {
 
     const [Comentario, setComentario] = useState("")
 
-    const [showModalUpd, setshowModalUpd] = useState("");
+    const [showModalUpd, setshowModalUpd] = useState(true);
 
     return (
         <NativeBaseProvider>
@@ -271,7 +283,7 @@ const ManagePost = ({ route, navigation }) => {
 
                             <Input value={Comentario} onChange={(e) => setComentario(e.target.value)} variant="rounded" mx="3" placeholder="Comparte tus ideas c:" />
 
-                            <Button onPress={() => setshowModalUpd(!showModalUpd)}>Actualizar</Button>
+                            <Button onPress={() => Update(updateVal)}>Actualizar</Button>
 
                         </Stack>
 
@@ -313,8 +325,8 @@ const Estilo = StyleSheet.create({
     ViewComent: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-        height: '100%',
+        width: '110%',
+        height: '110%',
     },
     InputBus: {
         backgroundColor: '#fff',
@@ -331,33 +343,33 @@ const Estilo = StyleSheet.create({
         borderRadius: 8,
         margin: 2,
         height: 50,
-        width: '80%',
+        width: '90%',
     },
     Caratula: {
-        width: '100%',
+        width: '110%',
         alignItems: 'center',
         alignContent: 'center',
-        height: '40%',
+        height: '50%',
         borderRadius: 8,
         padding: 2,
         margin: 2
     },
     Caratula2: {
-        width: '80%',
+        width: '90%',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        height: '40%',
+        height: '50%',
         borderRadius: 8,
         padding: 0,
         margin: 15
     },
     Caratula3: {
-        width: '90%',
+        width: '100%',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        height: '40%',
+        height: '50%',
         borderRadius: 8,
         padding: 0,
         margin: 10
